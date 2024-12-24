@@ -31,7 +31,9 @@ func main() {
 		log.Fatal("Failed to connect to database")
 	}
 
-	db.AutoMigrate(&models.User{})
+	if err := models.MigrateGroup(db); err != nil{
+		log.Fatalf("Error migrating group: %v\n", err)
+	}
 
 	port := os.Getenv("PORT")
 	if port == "" {
