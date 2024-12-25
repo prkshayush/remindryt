@@ -9,7 +9,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
+	"github.com/prkshayush/remindryt/controllers"
 	"github.com/prkshayush/remindryt/models"
+	"github.com/prkshayush/remindryt/repository"
 	"github.com/prkshayush/remindryt/routes"
 	"google.golang.org/api/option"
 	"gorm.io/driver/postgres"
@@ -74,8 +76,12 @@ func main() {
         AllowCredentials: true,
     }))
 
-	// Register routes
+	dashRepo := repository.DashboardRepository(db)
+	dashController := controllers.NewDashboardController(dashRepo)
+
+	// routes
 	routes.AuthRoutes(app, db, auth)
+	routes.DashboardRoutes(app, dashController, auth)
 
 	app.Listen(":" + port)
 
