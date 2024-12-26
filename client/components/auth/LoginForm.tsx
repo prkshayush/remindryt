@@ -2,16 +2,16 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { auth } from '@/app/lib/firebase';
-import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import Link from 'next/link';
 
-export default function RegisterForm() {
+export default function LoginForm() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const router = useRouter();
 
-    const handleEmailRegister = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleEmailLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
         setError('');
@@ -19,24 +19,10 @@ export default function RegisterForm() {
         const form = e.currentTarget;
         const email = form.email.value;
         const password = form.password.value;
-        const username = form.username.value;
 
         try {
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const token = await userCredential.user.getIdToken();
-
-            // Register with backend
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/register`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ email, username })
-            });
-
-            if (!response.ok) throw new Error('Registration failed');
-
             localStorage.setItem('auth_token', token);
             router.push('/dashboard');
         } catch (err: any) {
@@ -46,7 +32,7 @@ export default function RegisterForm() {
         }
     };
 
-    const handleGoogleRegister = async () => {
+    const handleGoogleLogin = async () => {
         setLoading(true);
         setError('');
 
@@ -54,22 +40,6 @@ export default function RegisterForm() {
             const provider = new GoogleAuthProvider();
             const userCredential = await signInWithPopup(auth, provider);
             const token = await userCredential.user.getIdToken();
-
-            // Register with backend
-            const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/register`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    email: userCredential.user.email,
-                    username: userCredential.user.displayName?.split(' ')[0] || userCredential.user.email?.split('@')[0]
-                })
-            });
-
-            if (!response.ok) throw new Error('Registration failed');
-
             localStorage.setItem('auth_token', token);
             router.push('/dashboard');
         } catch (err: any) {
@@ -82,22 +52,12 @@ export default function RegisterForm() {
     return (
         <div className="w-full max-w-md space-y-8 p-6 bg-white rounded-lg shadow-md text-gray-900">
             <div className="text-center">
-                <h2 className="text-3xl font-bold">Create an account</h2>
-                <p className="mt-2 text-gray-600">Sign up to get started</p>
+                <h2 className="text-3xl font-bold">Welcome back</h2>
+                <p className="mt-2 text-gray-600">Please sign in to your account</p>
             </div>
 
-            <form onSubmit={handleEmailRegister} className="mt-8 space-y-6">
+            <form onSubmit={handleEmailLogin} className="mt-8 space-y-6">
                 <div className="rounded-md shadow-sm space-y-4">
-                    <div>
-                        <input
-                            id="username"
-                            name="username"
-                            type="text"
-                            required
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                            placeholder="Username"
-                        />
-                    </div>
                     <div>
                         <input
                             id="email"
@@ -126,7 +86,7 @@ export default function RegisterForm() {
                         disabled={loading}
                         className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
                     >
-                        {loading ? 'Creating account...' : 'Sign up'}
+                        {loading ? 'Signing in...' : 'Sign in'}
                     </button>
                 </div>
             </form>
@@ -142,13 +102,13 @@ export default function RegisterForm() {
                 </div>
 
                 <button
-                    onClick={handleGoogleRegister}
+                    onClick={handleGoogleLogin}
                     disabled={loading}
                     className="mt-4 w-full py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white hover:bg-gray-50"
                 >
                     <div className="flex items-center justify-center">
                         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5 mr-2" />
-                        Sign up with Google
+                        Sign in with Google
                     </div>
                 </button>
             </div>
@@ -160,9 +120,9 @@ export default function RegisterForm() {
             )}
 
             <p className="mt-4 text-center text-sm text-gray-600">
-                Already have an account?{' '}
-                <Link href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
-                    Sign in here
+                Don't have an account?{' '}
+                <Link href="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
+                    Register here
                 </Link>
             </p>
         </div>

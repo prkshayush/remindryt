@@ -53,7 +53,18 @@ func (c *DashController) GetGroups(ctx *fiber.Ctx) error {
         })
     }
 
-    groups, err := c.repo.GetGroups(user.ID)
+    var groups []models.Group
+    err := c.repo.Db.
+        Preload("Members").
+        Preload("Members.User").
+        Preload("Creator").
+        Where("creator_id = ?", user.ID).
+        Or("id IN (?)", 
+            c.repo.Db.Table("group_members").
+            Select("group_id").
+            Where("user_id = ?", user.ID)).
+        Find(&groups).Error
+
     if err != nil {
         return ctx.Status(http.StatusInternalServerError).JSON(&fiber.Map{
             "message": "Failed to fetch groups",

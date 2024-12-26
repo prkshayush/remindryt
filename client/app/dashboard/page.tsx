@@ -2,8 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { auth } from "@/app/lib/firebase";
+import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, signOut, User } from "firebase/auth";
+import Groups from "@/components/groups";
+
+// import CreateGroupButton from '@/components/groups/CreateGroupButton';
+// import JoinGroupButton from '@/components/groups/JoinGroupButton';
+// import GroupDetails from '@/components/groups/GroupDetails';
+
 
 export default function DashboardPage() {
     const [user, setUser] = useState<User | null>(null);
@@ -51,6 +57,10 @@ export default function DashboardPage() {
                     </div>
                     <div className="flex flex-col space-y-2">
                         {/* User Functions */}
+
+                        {/* <CreateGroupButton />
+                        <JoinGroupButton /> */}
+
                     </div>
                 </div>
                 <button
@@ -76,6 +86,9 @@ export default function DashboardPage() {
                 {/* Middle Row */}
                 <div className="h-3/6 border border-gray-200 rounded-lg bg-white/5 p-4">
                     Task Details
+                    
+                    <Groups />
+
                 </div>
 
                 {/* Bottom Row */}
