@@ -39,10 +39,11 @@ type Group struct {
 }
 
 type Task struct {
-	ID        uint    `gorm:"primaryKey" json:"id"`
+	ID        uint      `gorm:"primaryKey; autoIncrement" json:"id"`
 	UserID    string    `gorm:"not null" json:"user_id"`
 	User      User      `gorm:"foreignKey:UserID" json:"user"`
 	Title     string    `gorm:"not null" json:"title"`
+	Content   string    `gorm:"not null" json:"content"`
 	Progress  int       `gorm:"not null" json:"progress"`
 	Duedate   time.Time `gorm:"not null" json:"duedate"`
 	CreatedAt time.Time `json:"created_at"`
@@ -58,7 +59,7 @@ func (u *User) HashPassword(password string) error {
 	return nil
 }
 
-func MigrateFunc(db *gorm.DB) error{
-    err := db.AutoMigrate(&Group{}, &GroupMember{}, &Task{}, &User{})
-    return err
+func MigrateFunc(db *gorm.DB) error {
+	err := db.AutoMigrate(&Group{}, &GroupMember{}, &Task{}, &User{})
+	return err
 }
