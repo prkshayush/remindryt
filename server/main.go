@@ -33,7 +33,7 @@ func main() {
 		log.Fatal("Failed to connect to database")
 	}
 
-	if err := models.MigrateGroup(db); err != nil{
+	if err := models.MigrateFunc(db); err != nil{
 		log.Fatalf("Error migrating group: %v\n", err)
 	}
 

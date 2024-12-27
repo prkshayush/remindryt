@@ -39,7 +39,7 @@ type Group struct {
 }
 
 type Task struct {
-	ID        string    `gorm:"primaryKey" json:"id"`
+	ID        uint    `gorm:"primaryKey" json:"id"`
 	UserID    string    `gorm:"not null" json:"user_id"`
 	User      User      `gorm:"foreignKey:UserID" json:"user"`
 	Title     string    `gorm:"not null" json:"title"`
@@ -58,7 +58,7 @@ func (u *User) HashPassword(password string) error {
 	return nil
 }
 
-func MigrateGroup(db *gorm.DB) error{
+func MigrateFunc(db *gorm.DB) error{
     err := db.AutoMigrate(&Group{}, &GroupMember{}, &Task{}, &User{})
     return err
 }
