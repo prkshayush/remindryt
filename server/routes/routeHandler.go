@@ -1,11 +1,12 @@
 package routes
 
 import (
+	firebase "firebase.google.com/go/v4/auth"
 	"github.com/gofiber/fiber/v2"
 	"github.com/prkshayush/remindryt/controllers"
-	firebase "firebase.google.com/go/v4/auth"
-	"gorm.io/gorm"
 	"github.com/prkshayush/remindryt/middlewares"
+	"github.com/prkshayush/remindryt/repository"
+	"gorm.io/gorm"
 )
 
 type Repository struct{
@@ -28,4 +29,13 @@ func DashboardRoutes(app *fiber.App, controller *controllers.DashController, aut
 	dashboard.Post("/groups", controller.CreateGroup)
 	dashboard.Get("/groups/:id", controller.GetGroupByID)
 	dashboard.Post("/groups/join", controller.JoinGroup)
+}
+
+func TaskRoutes(app *fiber.App, controller *controllers.TaskController, auth *firebase.Client, r *repository.DashBoardRepo){
+	task := app.Group("/api/groups/:id/tasks", middlewares.AuthMiddleware(auth), middlewares.GroupMembershipMiddleware(r))
+
+	task.Post("/", controller.CreateTask)
+	task.Get("/", controller.GetTasks)
+    task.Patch("/:taskId", controller.UpdateTask)
+    task.Delete("/:taskId", controller.DeleteTask)
 }
