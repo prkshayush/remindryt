@@ -78,10 +78,14 @@ func main() {
 
 	dashRepo := repository.DashboardRepository(db)
 	dashController := controllers.NewDashboardController(dashRepo)
+	taskRepo := repository.TaskRepository(db)
+	taskController := controllers.NewTaskController(taskRepo, dashRepo)
 
 	// routes
 	routes.AuthRoutes(app, db, auth)
 	routes.DashboardRoutes(app, dashController, auth)
+	routes.TaskRoutes(app, taskController, auth)
+
 
 	app.Listen(":" + port)
 

@@ -39,17 +39,17 @@ type Group struct {
 }
 
 type Task struct {
-	ID        uint      `gorm:"primaryKey; autoIncrement" json:"id"`
-	UserID    string    `gorm:"not null" json:"user_id"`
-	User      User      `gorm:"foreignKey:UserID" json:"user"`
-	GroupID   string    `json:"group_id"`
-	Group     Group     `json:"group" gorm:"foreignKey:GroupID"`
-	Title     string    `gorm:"not null" json:"title"`
-	Content   string    `gorm:"not null" json:"content"`
-	Progress  int       `gorm:"not null" json:"progress"`
-	Duedate   time.Time `gorm:"not null" json:"duedate"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+    ID        string    `gorm:"primaryKey;type:uuid" json:"id"`
+    UserID    string    `json:"user_id"`
+    User      User      `gorm:"foreignKey:UserID" json:"user"`
+    GroupID   string    `json:"group_id"`
+    Group     Group     `json:"group" gorm:"foreignKey:GroupID"`
+    Title     string    `gorm:"not null" json:"title"`
+    Content   string    `gorm:"not null" json:"content"`
+    Progress  int       `gorm:"not null;default:0" json:"progress"`
+    Duedate   time.Time `json:"duedate"`
+    CreatedAt time.Time `json:"created_at"`
+    UpdatedAt time.Time `json:"updated_at"`
 }
 
 func (u *User) HashPassword(password string) error {
