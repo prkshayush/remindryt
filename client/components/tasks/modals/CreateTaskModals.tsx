@@ -65,7 +65,7 @@ export default function CreateTaskModal({ show, onClose, groupId }: CreateTaskMo
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Due Date</label>
                         <input
-                            type="datetime-local"
+                            type="date"
                             value={formData.duedate}
                             onChange={(e) => setFormData({ ...formData, duedate: e.target.value })}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"

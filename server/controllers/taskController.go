@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/prkshayush/remindryt/models"
@@ -21,40 +22,60 @@ func NewTaskController(r *repository.TaskRepo, dashRepo *repository.DashBoardRep
 	}
 }
 
+type CreateTaskRequest struct {
+    Title    string `json:"title"`
+    Content  string `json:"content"`
+    Duedate  string `json:"duedate"`
+    Progress int    `json:"progress"`
+}
+
 // task creation controller
 func (c *TaskController) CreateTask(ctx *fiber.Ctx) error {
-	groupID := ctx.Params("id")
-	if groupID == "" {
-		return ctx.Status(http.StatusBadRequest).JSON(&fiber.Map{
-			"message": "Group ID is required",
-		})
-	}
+    groupID := ctx.Params("id")
+    if groupID == "" {
+        return ctx.Status(http.StatusBadRequest).JSON(&fiber.Map{
+            "message": "Group ID is required",
+        })
+    }
 
-	task := new(models.Task)
-	if err := ctx.BodyParser(task); err != nil {
-		return ctx.Status(http.StatusBadRequest).JSON(&fiber.Map{
-			"message": "Error parsing JSON",
-		})
-	}
+    var req CreateTaskRequest
+    if err := ctx.BodyParser(&req); err != nil {
+        return ctx.Status(http.StatusBadRequest).JSON(&fiber.Map{
+            "message": "Error parsing JSON",
+        })
+    }
 
-	user, ok := ctx.Locals("user").(*models.User)
-	if !ok {
-		return ctx.Status(http.StatusUnauthorized).JSON(&fiber.Map{
-			"message": "Unauthorized access denied",
-		})
-	}
+    // Parse date string to time.Time
+    duedate, err := time.Parse("2006-01-02", req.Duedate)
+    if err != nil {
+        return ctx.Status(http.StatusBadRequest).JSON(&fiber.Map{
+            "message": "Invalid date format. Use YYYY-MM-DD",
+        })
+    }
 
-	task.UserID = user.ID
-	task.GroupID = groupID
+    user, ok := ctx.Locals("user").(*models.User)
+    if !ok {
+        return ctx.Status(http.StatusUnauthorized).JSON(&fiber.Map{
+            "message": "Unauthorized access denied",
+        })
+    }
 
-	if err := c.taskRepo.CreateTask(task); err != nil {
-		return ctx.Status(http.StatusInternalServerError).JSON(&fiber.Map{
-			"message": "Failed to create task",
-			"error":   err.Error(),
-		})
-	}
+    task := &models.Task{
+        Title:    req.Title,
+        Content:  req.Content,
+        Duedate:  duedate,
+        Progress: req.Progress,
+        UserID:   user.ID,
+        GroupID:  groupID,
+    }
 
-	return ctx.Status(http.StatusCreated).JSON(task)
+    if err := c.taskRepo.CreateTask(task); err != nil {
+        return ctx.Status(http.StatusInternalServerError).JSON(&fiber.Map{
+            "message": "Failed to create task",
+        })
+    }
+
+    return ctx.Status(http.StatusCreated).JSON(task)
 }
 
 func (c *TaskController) GetTasks(ctx *fiber.Ctx) error {

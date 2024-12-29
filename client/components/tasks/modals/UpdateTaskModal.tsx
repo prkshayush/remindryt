@@ -15,17 +15,22 @@ export default function UpdateTaskModal({ task, groupId, onClose }: UpdateTaskMo
         title: task.title,
         content: task.content,
         progress: task.progress,
-        duedate: task.duedate,
+        duedate: new Date(task.duedate).toISOString().split('T')[0],
     });
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        await dispatch(updateTask({
-            groupId,
-            taskId: task.id,
-            updates: formData as UpdateTaskRequest
-        }));
-        onClose();
+        try {
+            await dispatch(updateTask({
+                groupId,
+                taskId: task.id,
+                updates: formData as UpdateTaskRequest
+            })).unwrap();
+            alert("Task updated successfully");
+            onClose();
+        } catch (error) {
+            alert("Failed to update task");
+        }
     };
 
     return (
@@ -66,7 +71,7 @@ export default function UpdateTaskModal({ task, groupId, onClose }: UpdateTaskMo
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Due Date</label>
                         <input
-                            type="datetime-local"
+                            type="date"
                             value={formData.duedate}
                             onChange={(e) => setFormData({ ...formData, duedate: e.target.value })}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"

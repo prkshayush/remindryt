@@ -47,7 +47,7 @@ type Task struct {
     Title     string    `gorm:"not null" json:"title"`
     Content   string    `gorm:"not null" json:"content"`
     Progress  int       `gorm:"not null;default:0" json:"progress"`
-    Duedate   time.Time `json:"duedate"`
+    Duedate   time.Time `json:"duedate" gorm:"type:date"`
     CreatedAt time.Time `json:"created_at"`
     UpdatedAt time.Time `json:"updated_at"`
 }

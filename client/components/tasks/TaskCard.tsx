@@ -9,6 +9,11 @@ interface TaskCardProps {
     groupId: string;
 }
 
+function formatDate(dateString: string) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString(); // date in user's locale format
+}
+
 export default function TaskCard({ task, groupId }: TaskCardProps) {
     const dispatch = useAppDispatch();
     const [showEditModal, setShowEditModal] = useState(false);
@@ -41,7 +46,7 @@ export default function TaskCard({ task, groupId }: TaskCardProps) {
                 </div>
                 <div className="mt-4 flex justify-between items-center">
                     <span className="text-sm text-gray-700">
-                        Due: {new Date(task.duedate).toLocaleDateString()}
+                        Due: {formatDate(task.duedate)}
                     </span>
                     <div className="space-x-2">
                         <button
