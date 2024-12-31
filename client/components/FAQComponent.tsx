@@ -14,26 +14,27 @@ const FAQItem = ({ question, answer }: FAQItemProps) => {
     };
 
     return (
-        <div className="border-b last:border-b-0 py-4">
+        <div className="border-b border-gray-300 last:border-b-0 py-4">
             <div className="flex justify-between items-center
                             cursor-pointer" onClick={toggleOpen}>
                 <h3 className="font-semibold text-lg">{question}</h3>
                 <svg
-                    className={`w-6 h-6 transform transition-transform
-                                duration-350 ${isOpen ? 'rotate-90' : ''
+                    className={`w-6 h-6 transform transition-transform duration-400 ${isOpen ? 'rotate-45' : ''
                         }`}
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
                 >
-                    <path strokeLinecap="round" 
-                          strokeLinejoin="round" 
-                          strokeWidth={2} d="M12 14l-4-4m0
-                                             0l4-4m-4 4h8" />
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 6v12M6 12h12"
+                    />
                 </svg>
             </div>
             {isOpen && (
-                <p className="mt-2 text-gray-600">{answer}</p>
+                <p className="mt-2 text-gray-300">{answer}</p>
             )}
         </div>
     );
@@ -42,51 +43,25 @@ const FAQItem = ({ question, answer }: FAQItemProps) => {
 const FAQ = () => {
     const faqData = [
         {
-            question: "What courses do you offer?",
-            answer: `We offer a variety of courses
-                     across subjects like programming,
-                     data science, design, and business
-                     management.`,
+            question: "How can I join group?",
+            answer: `The creator of group will send you a join code, use this code to join the group.`,
         },
         {
-            question: "How long do the courses take?",
-            answer: `Course duration varies; some are
-                     completed in a few hours while others
-                     may take several weeks, depending on the
-                     depth of the content.`,
+            question: "Where is the join code?",
+            answer: `After creating the group, you will see a "join-code" in group dashboard, send this to your friend and invite them.`,
         },
         {
-            question: "Are the courses self-paced?",
-            answer: `Yes, our courses are self-paced,
-                     allowing you to learn at your 
-                     own speed and convenience.`,
-        },
-        {
-            question: "Do I receive a certificate upon completion?",
-            answer: `Yes, upon completing a course, you will
-                     receive a certificate that you can download
-                     and share.`,
-        },
-        {
-            question: "Is there a money-back guarantee?",
-            answer: `Absolutely! If you are not satisfied
-                     with a course, you can request a full
-                     refund within 30 days of purchase.`,
-        },
-        {
-            question: "Can I access the courses on mobile devices?",
-            answer: `Yes, our platform is mobile-friendly,
-                     allowing you to access courses on
-                     smartphones and tablets.`,
+            question: "How many groups can I be a part of?",
+            answer: `Any one user can create a maximum of one group, and can join 3 other groups as member, for now.`,
         },
     ];
 
     return (
         <div className="max-w-4xl mx-auto p-4">
             {faqData.map((item, index) => (
-                <FAQItem key={index} 
-                question={item.question} 
-                answer={item.answer} />
+                <FAQItem key={index}
+                    question={item.question}
+                    answer={item.answer} />
             ))}
         </div>
     );
