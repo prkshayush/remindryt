@@ -13,6 +13,7 @@ import (
 	"github.com/prkshayush/remindryt/models"
 	"github.com/prkshayush/remindryt/repository"
 	"github.com/prkshayush/remindryt/routes"
+	"github.com/prkshayush/remindryt/services"
 	"google.golang.org/api/option"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -33,7 +34,7 @@ func main() {
 		log.Fatal("Failed to connect to database")
 	}
 
-	if err := models.MigrateFunc(db); err != nil{
+	if err := models.MigrateFunc(db); err != nil {
 		log.Fatalf("Error migrating group: %v\n", err)
 	}
 
@@ -55,14 +56,14 @@ func main() {
 	}
 
 	// Create a new Fiber instance
-    app := fiber.New(fiber.Config{
-        ErrorHandler: func(c *fiber.Ctx, err error) error {
-            return c.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{
-                "status": "error",
-                "message": err.Error(),
-            })
-        },
-    })
+	app := fiber.New(fiber.Config{
+		ErrorHandler: func(c *fiber.Ctx, err error) error {
+			return c.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{
+				"status":  "error",
+				"message": err.Error(),
+			})
+		},
+	})
 
 	clientURL := os.Getenv("CLIENT_URL")
 	if clientURL == "" {
@@ -70,22 +71,24 @@ func main() {
 	}
 
 	app.Use(cors.New(cors.Config{
-        AllowOrigins: clientURL,
-        AllowHeaders: "Origin, Content-Type, Accept, Authorization",
-        AllowMethods: "GET,POST,HEAD,PUT,DELETE,PATCH",
-        AllowCredentials: true,
-    }))
+		AllowOrigins:     clientURL,
+		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
+		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH",
+		AllowCredentials: true,
+	}))
 
 	dashRepo := repository.DashboardRepository(db)
 	dashController := controllers.NewDashboardController(dashRepo)
 	taskRepo := repository.TaskRepository(db)
 	taskController := controllers.NewTaskController(taskRepo, dashRepo)
+	analyticsService := services.NewAnalyticsService()
+	analyticsController := controllers.NewAnalyticsController(analyticsService)
 
 	// routes
 	routes.AuthRoutes(app, db, auth)
 	routes.DashboardRoutes(app, dashController, auth)
 	routes.TaskRoutes(app, taskController, auth)
-
+	routes.AnalyticsRoutes(app, analyticsController, auth)
 
 	app.Listen(":" + port)
 

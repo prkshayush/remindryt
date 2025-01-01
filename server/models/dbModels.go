@@ -39,17 +39,41 @@ type Group struct {
 }
 
 type Task struct {
-    ID        string    `gorm:"primaryKey;type:uuid" json:"id"`
-    UserID    string    `json:"user_id"`
-    User      User      `gorm:"foreignKey:UserID" json:"user"`
-    GroupID   string    `json:"group_id"`
-    Group     Group     `json:"group" gorm:"foreignKey:GroupID"`
-    Title     string    `gorm:"not null" json:"title"`
-    Content   string    `gorm:"not null" json:"content"`
-    Progress  int       `gorm:"not null;default:0" json:"progress"`
-    Duedate   time.Time `json:"duedate" gorm:"type:date"`
-    CreatedAt time.Time `json:"created_at"`
-    UpdatedAt time.Time `json:"updated_at"`
+	ID        string    `gorm:"primaryKey;type:uuid" json:"id"`
+	UserID    string    `json:"user_id"`
+	User      User      `gorm:"foreignKey:UserID" json:"user"`
+	GroupID   string    `json:"group_id"`
+	Group     Group     `json:"group" gorm:"foreignKey:GroupID"`
+	Title     string    `gorm:"not null" json:"title"`
+	Content   string    `gorm:"not null" json:"content"`
+	Progress  int       `gorm:"not null;default:0" json:"progress"`
+	Duedate   time.Time `json:"duedate" gorm:"type:date"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type AnalyticsResponse struct {
+	Metrics struct {
+		TotalTasks     int     `json:"total_tasks"`
+		Completed      int     `json:"completed"`
+		CompletionRate float64 `json:"completion_rate"`
+		Overdue        int     `json:"overdue"`
+		HealthScore    float64 `json:"health_score"`
+	} `json:"metrics"`
+	Insights string `json:"insights"`
+	Timestamp  string `json:"timestamp"`
+}
+
+type LeaderboardEntry struct {
+	UserID           string  `json:"user_id"`
+	Score            float64 `json:"score"`
+	TasksCompleted   int     `json:"tasks_completed"`
+	TotalTasks       int     `json:"total_tasks"`
+	OnTimeCompletion int     `json:"on_time_completion"`
+}
+
+type LeaderboardResponse struct {
+    Leaderboard []LeaderboardEntry `json:"leaderboard"`
 }
 
 func (u *User) HashPassword(password string) error {

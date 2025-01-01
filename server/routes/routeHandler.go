@@ -40,3 +40,11 @@ func TaskRoutes(app *fiber.App, controller *controllers.TaskController, auth *fi
 	tasks.Patch("/:taskId", controller.UpdateTask)
 	tasks.Delete("/:taskId", controller.DeleteTask)
 }
+
+func AnalyticsRoutes(app *fiber.App, controller *controllers.AnalyticsController, auth *firebase.Client) {
+    routes := app.Group("/api/dashboard/groups/:id",
+        middlewares.AuthMiddleware(auth))
+    
+    routes.Get("/analytics", controller.GetGroupAnalytics)
+    // routes.Get("/leaderboard", controller.GetGroupLeaderboard)
+}
