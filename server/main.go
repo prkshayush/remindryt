@@ -83,12 +83,14 @@ func main() {
 	taskController := controllers.NewTaskController(taskRepo, dashRepo)
 	analyticsService := services.NewAnalyticsService()
 	analyticsController := controllers.NewAnalyticsController(analyticsService)
+	leaderboardService := services.NewLeaderboardService()
+	leaderboardController := controllers.NewLeaderboardController(leaderboardService)
 
 	// routes
 	routes.AuthRoutes(app, db, auth)
 	routes.DashboardRoutes(app, dashController, auth)
 	routes.TaskRoutes(app, taskController, auth)
-	routes.AnalyticsRoutes(app, analyticsController, auth)
+	routes.AnalyticsRoutes(app, analyticsController, leaderboardController, auth)
 
 	app.Listen(":" + port)
 
