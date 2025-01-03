@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List, Dict
 from sqlalchemy.orm import Session
 from models.leaderboard import Leaderboard
@@ -11,6 +11,26 @@ class LeaderboardService:
         self.analysis_service = TaskAnalyzer()
 
     def get_leaderboard(self, db: Session, group_id: str) -> List[Dict]:
+        # Check if leaderboard data exists and is within the 10-hour window
+        ten_hours_ago = datetime.now() - timedelta(hours=10)
+        existing_entries = db.query(Leaderboard).filter(
+            Leaderboard.group_id == group_id,
+            Leaderboard.last_updated >= ten_hours_ago
+        ).all()
+
+        if existing_entries:
+            # Return existing data if it's within the 10-hour window
+            return [
+                {
+                    'user_id': entry.user_id,
+                    'username': entry.username,
+                    'rank': entry.rank,
+                    'task_completion_rate': entry.task_completion_rate
+                }
+                for entry in existing_entries
+            ]
+
+        # Fetch tasks and regenerate leaderboard data if outdated or doesn't exist
         tasks = db.query(Task).filter(Task.group_id == group_id).all()
         
         if not tasks:

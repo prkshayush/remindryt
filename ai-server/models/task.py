@@ -6,7 +6,7 @@ Base = declarative_base()
 
 class Task(Base):
     __tablename__ = "tasks"
-
+    
     id = Column(String, primary_key=True, index=True)
     title = Column(String, nullable=False)
     content = Column(String, nullable=False)

@@ -1,6 +1,6 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import google.generativeai as ai
-from typing import List
+from typing import List, Dict
 from sqlalchemy.orm import Session
 import os
 from dotenv import load_dotenv
@@ -57,7 +57,7 @@ class TaskAnalyzer:
         - Overdue Tasks: {metrics['overdue']}
         - Health Score: {metrics['health_score']}%
 
-        Provide a brief, motivational insight about group members and the task progress.
+        Provide a brief, motivational insight about the task progress, personalise it, make it more than just a general message.
         """
         response = self.model.generate_content(prompt)
         return response.text
