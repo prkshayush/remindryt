@@ -5,6 +5,7 @@ from sqlalchemy.orm import sessionmaker, Session
 from services.analysis import TaskAnalyzer
 from services.leaderboard import LeaderboardService
 from models.leaderboard import Leaderboard, Base as LeaderboardBase
+from models.user import User
 from uuid import UUID
 from datetime import datetime
 import os
@@ -91,54 +92,21 @@ async def analyze_group_tasks(group_id: str, db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-
-
 leaderboard_service = LeaderboardService()
 
 @app.get("/leaderboard/{group_id}")
 async def get_group_leaderboard(group_id: str, db: Session = Depends(get_db)):
     try:
         group_uuid = UUID(group_id)
-        tasks = db.query(Task).filter(Task.group_id == str(group_uuid)).all()
+        rankings = leaderboard_service.get_leaderboard(db, str(group_uuid))
         
-        # Group tasks by user
-        user_tasks = {}
-        for task in tasks:
-            if task.user_id not in user_tasks:
-                user_tasks[task.user_id] = []
-            user_tasks[task.user_id].append({
-                'progress': task.progress,
-                'duedate': task.duedate.isoformat()
-            })
+        if not rankings:
+            raise HTTPException(status_code=404, detail="No leaderboard data found for this group")
         
-        # Calculate and update scores
-        rankings = []
-        for user_id, tasks in user_tasks.items():
-            score = leaderboard_service.calculate_user_score(tasks)
-            stats = {
-                'completed': sum(1 for t in tasks if t['progress'] == 100),
-                'total': len(tasks),
-                'on_time': sum(1 for t in tasks 
-                              if t['progress'] == 100 
-                              and datetime.fromisoformat(t['duedate']) >= datetime.now())
-            }
-            
-            entry = leaderboard_service.update_leaderboard(
-                db, user_id, str(group_uuid), score, stats
-            )
-            
-            rankings.append({
-                'user_id': user_id,
-                'score': score,
-                'tasks_completed': stats['completed'],
-                'total_tasks': stats['total'],
-                'on_time_completion': stats['on_time']
-            })
+        return {'leaderboard': rankings}
         
-        rankings.sort(key=lambda x: x['score'], reverse=True)
-        return {'leaderboard': rankings[:10]}
-        
-    except ValueError:
+    except ValueError as ve:
         raise HTTPException(status_code=422, detail="Invalid UUID format")
     except Exception as e:
+        print(f"Exception: {e}")
         raise HTTPException(status_code=500, detail=str(e))

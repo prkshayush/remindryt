@@ -1,42 +1,73 @@
 from datetime import datetime
 from typing import List, Dict
-from models.leaderboard import Leaderboard, Base
+from sqlalchemy.orm import Session
+from models.leaderboard import Leaderboard
+from models.user import User
+from models.task import Task
+from services.analysis import TaskAnalyzer
 
 class LeaderboardService:
-    def calculate_user_score(self, tasks: List[dict]) -> float:
-        if not tasks:
-            return 0.0
-            
-        total = len(tasks)
-        completed = sum(1 for t in tasks if t['progress'] == 100)
-        on_time = sum(1 for t in tasks 
-                     if t['progress'] == 100 
-                     and datetime.fromisoformat(t['duedate']) >= datetime.now())
-                     
-        completion_rate = completed / total if total > 0 else 0
-        time_efficiency = on_time / total if total > 0 else 0
-        
-        return round((completion_rate * 0.6 + time_efficiency * 0.4) * 100, 2)
+    def __init__(self):
+        self.analysis_service = TaskAnalyzer()
 
-    def update_leaderboard(self, db, user_id: str, group_id: str, 
-                          score: float, stats: Dict) -> Leaderboard:
-        entry = db.query(Leaderboard).filter(
-            Leaderboard.user_id == user_id,
-            Leaderboard.group_id == group_id
-        ).first()
+    def get_leaderboard(self, db: Session, group_id: str) -> List[Dict]:
+        tasks = db.query(Task).filter(Task.group_id == group_id).all()
         
-        if not entry:
-            entry = Leaderboard(
-                user_id=user_id,
-                group_id=group_id
-            )
-            db.add(entry)
+        if not tasks:
+            return []
+
+        user_tasks = {}
+        for task in tasks:
+            if task.user_id not in user_tasks:
+                user_tasks[task.user_id] = []
+            user_tasks[task.user_id].append({
+                'progress': task.progress,
+                'duedate': task.duedate.isoformat()
+            })
+        
+        rankings = []
+        for user_id, tasks in user_tasks.items():
+            metrics = self.analysis_service._calculate_metrics(tasks)
+            completion_rate = metrics['completion_rate']
             
-        entry.score = score
-        entry.tasks_completed = stats['completed']
-        entry.total_tasks = stats['total']
-        entry.on_time_completion = stats['on_time']
-        entry.last_updated = datetime.utcnow()
+            user = db.query(User).filter(User.id == user_id).first()
+            entry = db.query(Leaderboard).filter(
+                Leaderboard.user_id == user_id,
+                Leaderboard.group_id == group_id
+            ).first()
+            
+            if not entry:
+                entry = Leaderboard(
+                    user_id=user_id,
+                    group_id=group_id,
+                    username=user.username if user else "Unknown",
+                    task_completion_rate=completion_rate,
+                    last_updated=datetime.now()
+                )
+                db.add(entry)
+            else:
+                entry.task_completion_rate = completion_rate
+                entry.last_updated = datetime.now()
+            
+            db.commit()
+            
+            rankings.append({
+                'user_id': user_id,
+                'username': user.username if user else "Unknown",
+                'rank': len(rankings) + 1,
+                'task_completion_rate': completion_rate
+            })
         
-        db.commit()
-        return entry
+        rankings.sort(key=lambda x: x['task_completion_rate'], reverse=True)
+        
+        # Update ranks
+        for index, ranking in enumerate(rankings):
+            ranking['rank'] = index + 1
+            entry = db.query(Leaderboard).filter(
+                Leaderboard.user_id == ranking['user_id'],
+                Leaderboard.group_id == group_id
+            ).first()
+            entry.rank = ranking['rank']
+            db.commit()
+        
+        return rankings

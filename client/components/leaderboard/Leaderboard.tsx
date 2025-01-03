@@ -4,9 +4,9 @@ import { Group } from '@/types/group';
 
 interface LeaderboardEntry {
     user_id: string;
-    score: number;
-    tasks_completed: number;
-    total_tasks: number;
+    username: string;
+    rank: number;
+    task_completion_rate: number;
 }
 
 const LeaderboardTable = () => {
@@ -40,6 +40,7 @@ const LeaderboardTable = () => {
                 try {
                     const response = await axiosInstance.get<{ leaderboard: LeaderboardEntry[] }>(`/api/dashboard/groups/${selectedGroupId}/leaderboard`);
                     setLeaderboard(response.data.leaderboard);
+                    console.log('Leaderboard data:', response.data.leaderboard);
                 } catch (error) {
                     console.error('Error fetching leaderboard:', error);
                     setLeaderboard([]);
@@ -72,10 +73,9 @@ const LeaderboardTable = () => {
                 <div>
                     {leaderboard.map((entry: LeaderboardEntry, index) => (
                         <div className='flex flex-col space-y-2' key={entry.user_id}>
-                            <span>#{index + 1} {entry.user_id}</span>
+                            <span>#{index + 1} {entry.username}</span>
                             <div className='flex justify-between'>
-                                <span>{entry.score} points</span>
-                                <span>{entry.tasks_completed}/{entry.total_tasks} &nbsp;Done</span>
+                                <span>{entry.task_completion_rate}% completion rate</span>
                             </div>
                         </div>
                     ))}

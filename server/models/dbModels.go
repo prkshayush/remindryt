@@ -65,11 +65,10 @@ type AnalyticsResponse struct {
 }
 
 type LeaderboardEntry struct {
-	UserID           string  `json:"user_id"`
-	Score            float64 `json:"score"`
-	TasksCompleted   int     `json:"tasks_completed"`
-	TotalTasks       int     `json:"total_tasks"`
-	OnTimeCompletion int     `json:"on_time_completion"`
+    UserID           string  `json:"user_id"`
+    Username         string  `json:"username"`
+    Rank             int     `json:"rank"`
+    TaskCompletionRate float64 `json:"task_completion_rate"`
 }
 
 type LeaderboardResponse struct {

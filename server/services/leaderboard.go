@@ -19,18 +19,22 @@ func NewLeaderboardService() *LeaderboardService {
 	}
 }
 
-func (s *LeaderboardService) GetLeaderboard(groupID string) (*models.LeaderboardResponse, error){
-	res, err := http.Get(fmt.Sprintf("%s/leaderboard/%s", s.aiServiceURL, groupID))
-	if err != nil{
-		return nil, err
-	}
+func (s *LeaderboardService) GetLeaderboard(groupID string) (*models.LeaderboardResponse, error) {
+    resp, err := http.Get(fmt.Sprintf("%s/leaderboard/%s", s.aiServiceURL, groupID))
+    if err != nil {
+        return nil, fmt.Errorf("failed to fetch leaderboard data: %w", err)
+    }
+    defer resp.Body.Close()
 
-	defer res.Body.Close()
+    if resp.StatusCode != http.StatusOK {
+        return nil, fmt.Errorf("failed to fetch leaderboard data: status code %d", resp.StatusCode)
+    }
 
-	var leaderboard models.LeaderboardResponse
-	if err := json.NewDecoder(res.Body).Decode(&leaderboard); err != nil{
-		return nil, err
-	}
+    var leaderboardResponse models.LeaderboardResponse
+    err = json.NewDecoder(resp.Body).Decode(&leaderboardResponse)
+    if err != nil {
+        return nil, fmt.Errorf("failed to parse leaderboard data: %w", err)
+    }
 
-	return &leaderboard, nil
+    return &leaderboardResponse, nil
 }

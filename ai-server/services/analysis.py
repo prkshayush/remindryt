@@ -57,7 +57,7 @@ class TaskAnalyzer:
         - Overdue Tasks: {metrics['overdue']}
         - Health Score: {metrics['health_score']}%
 
-        Provide a brief, motivational insight about the task progress.
+        Provide a brief, motivational insight about group members and the task progress.
         """
         response = self.model.generate_content(prompt)
         return response.text
