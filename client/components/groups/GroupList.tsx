@@ -8,9 +8,6 @@ interface GroupListProps {
 }
 
 const GroupList = ({ groups }: GroupListProps) => {
-    console.log('Groups type:', typeof groups);
-    console.log('Groups value:', groups);
-
     // Ensure groups is an array
     const safeGroups = Array.isArray(groups) ? groups : [];
 
@@ -23,8 +20,8 @@ const GroupList = ({ groups }: GroupListProps) => {
     }
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {safeGroups.map(group => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {safeGroups?.filter(group => group && group.id).map(group => (
                 <GroupCard key={group.id} group={group} />
             ))}
         </div>

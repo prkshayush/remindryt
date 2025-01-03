@@ -18,18 +18,22 @@ const GroupCard = ({ group }: GroupCardProps) => {
                 <p className="text-sm text-gray-600">{group.description}</p>
                 {/* Members Section */}
                 <p className="text-sm text-gray-500 mb-2">
-                    Members ({group.members.length})
+                    Members ({group?.members?.length || 0})
                 </p>
                 <div className="space-y-1">
-                    {group.members.map((member) => (
-                        <div key={member.id} className="text-xs text-gray-600 flex items-center">
-                            <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
-                            {member.user.username || 'Anonymous'}
-                            {member.role === 'admin' && (
-                                <span className="ml-2 text-xs text-blue-500">(Admin)</span>
-                            )}
-                        </div>
-                    ))}
+                    {group?.members?.filter(member => member && member.user)
+                        .map((member) => (
+                            <div key={member.id} className="text-xs text-gray-600 flex items-center">
+                                <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                                {member?.user?.username || 'Anonymous'}
+                                {member?.role === 'admin' && (
+                                    <span className="ml-2 text-xs text-blue-500">(Admin)</span>
+                                )}
+                            </div>
+                        ))}
+                    {(!group?.members || group.members.length === 0) && (
+                        <div className="text-xs text-gray-500">No members</div>
+                    )}
                 </div>
             </div>
 

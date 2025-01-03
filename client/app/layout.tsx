@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Oregano } from "next/font/google";
 import "./globals.css";
 import { ReduxProvider } from "@/lib/store/provider";
+import { GroupAnalyticsProvider } from "@/context/AnalyticsContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,7 +36,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${oreganoSans.variable} antialiased`}
       >
         <ReduxProvider>
-          {children}
+          <GroupAnalyticsProvider>
+            {children}
+          </GroupAnalyticsProvider>
         </ReduxProvider>
       </body>
     </html>
