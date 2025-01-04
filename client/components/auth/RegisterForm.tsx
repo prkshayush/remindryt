@@ -86,7 +86,7 @@ export default function RegisterForm() {
                 <p className="mt-2 text-gray-600">Sign up to get started</p>
             </div>
 
-            <form onSubmit={handleEmailRegister} className="mt-8 space-y-6">
+            <form id='register' name='signUp' onSubmit={handleEmailRegister} className="mt-8 space-y-6">
                 <div className="rounded-md shadow-sm space-y-4">
                     <div>
                         <input

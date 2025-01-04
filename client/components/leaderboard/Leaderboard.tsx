@@ -40,7 +40,6 @@ const LeaderboardTable = () => {
                 try {
                     const response = await axiosInstance.get<{ leaderboard: LeaderboardEntry[] }>(`/api/dashboard/groups/${selectedGroupId}/leaderboard`);
                     setLeaderboard(response.data.leaderboard);
-                    console.log('Leaderboard data:', response.data.leaderboard);
                 } catch (error) {
                     console.error('Error fetching leaderboard:', error);
                     setLeaderboard([]);

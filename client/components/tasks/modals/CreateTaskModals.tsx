@@ -42,34 +42,37 @@ export default function CreateTaskModal({ show, onClose, groupId }: CreateTaskMo
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center text-gray-900">
             <div className="bg-white p-6 rounded-lg w-full max-w-md">
                 <h2 className="text-xl font-bold mb-4">Create New Task</h2>
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form name="taskCreation" id="task" onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Title</label>
+                        <label id="title" className="block text-sm font-medium text-gray-700">Title
                         <input
                             type="text"
+                            id="title"
                             value={formData.title}
                             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                             required
-                        />
+                        /></label>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Content</label>
+                        <label id="content" className="block text-sm font-medium text-gray-700">Content
                         <textarea
                             value={formData.content}
+                            id="content"
                             onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
                             required
-                        />
+                        /></label>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Due Date</label>
+                        <label id="duedate" className="block text-sm font-medium text-gray-700">Due Date
                         <input
                             type="date"
+                            id="duedate"
                             value={formData.duedate}
                             onChange={(e) => setFormData({ ...formData, duedate: e.target.value })}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                        />
+                        /></label>
                     </div>
                     <div className="flex justify-end space-x-2">
                         <button

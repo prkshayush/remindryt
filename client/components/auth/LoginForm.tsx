@@ -56,13 +56,14 @@ export default function LoginForm() {
                 <p className="mt-2 text-gray-600">Please sign in to your account</p>
             </div>
 
-            <form onSubmit={handleEmailLogin} className="mt-8 space-y-6">
+            <form id='login' name='loginForm' onSubmit={handleEmailLogin} className="mt-8 space-y-6">
                 <div className="rounded-md shadow-sm space-y-4">
                     <div>
                         <input
                             id="email"
                             name="email"
                             type="email"
+                            autoComplete='email'
                             required
                             className="w-full px-3 py-2 border border-gray-300 rounded-md"
                             placeholder="Email address"

@@ -31,7 +31,7 @@ const CreateGroupModal = ({ show, onClose }: ModalProps) => {
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md text-gray-900">
         <h3 className="text-lg font-semibold mb-4">Create New Group</h3>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form id="group" name="groupCreation" onSubmit={handleSubmit} className="space-y-4">
           <div>
             <input
               type="text"
