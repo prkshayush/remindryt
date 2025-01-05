@@ -7,7 +7,7 @@ export default function AboutSection(){
             <div className="">
                 <UserGuide />
             </div>
-            <div className="sm:w-2/3 w-[600px]">
+            <div className="sm:w-2/3 lg:w-[600px]">
             <h1 className="text-center mb-4
                            text-2xl font-bold">
                             FAQs
